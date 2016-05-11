@@ -52,6 +52,8 @@ public class HomeScreen extends Screen {
     private Root root;
     int i=0;
     int j=0;
+    Mike body;
+    private int score = 1;
     public static int aa = 0;
     //ArrayList<Object> o = new ArrayList<Object>();
     public static HashMap<Body, String> bodies = new HashMap<Body, String>();
@@ -80,9 +82,9 @@ public class HomeScreen extends Screen {
         super.wasShown();
         //this.layer.add(bg);
         //mike = new Mike(world,350f,0f);
-        m.add(i,new Mike(world,350f,0f));
+        m.add(i,new Mike(world,350f,480f));
         //layer.add(m.get(i).layer());
-       mouse().setListener(new Mouse.Adapter() {
+       /*mouse().setListener(new Mouse.Adapter() {
             @Override
             public void onMouseDown(Mouse.ButtonEvent event) {
                 /*System.out.println(event.x() + " and " +
@@ -90,12 +92,18 @@ public class HomeScreen extends Screen {
 
                 //Mike mike2 = new Mike(world,event.x(),event.y());
                 //aa(event.x(),event.y());
-                m.add(i,new Mike(world,event.x(),event.y()));
+
+
+
+               /* m.add(i,new Mike(world,event.x(),event.y()));
                 //m.add(i,mike2)  ;
                 layer.add(m.get(i).layer());
                 //mike = m.get(i);
                 i++;
-                j++;;
+                j++;;*/
+
+
+
                /* BodyDef bodyDef = new BodyDef();
                 bodyDef.type = BodyType.DYNAMIC;
                 bodyDef.position = new Vec2(event.x() * M_PER_PIXEL,
@@ -122,9 +130,9 @@ public class HomeScreen extends Screen {
                 //return body;*/
                 //System.out.println(j);
 
-            }
+            /*}
 
-        });
+        });*/
 
 
 
@@ -147,22 +155,84 @@ public class HomeScreen extends Screen {
             debugDraw.setCamera(0, 0, 1f / HomeScreen.M_PER_PIXEL);
             world.setDebugDraw(debugDraw);
         }
+
         Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
         groundShape.set(new Vec2(0, height), new Vec2(width, height));
         ground.createFixture(groundShape, 0.0f);
+        bodies.put(ground, "ground ");
+
+
+        Body coin = world.createBody(new BodyDef());
+        final CircleShape shape = new CircleShape();
+        shape.setRadius(0.7f);
+        shape.m_p.set(640/2*M_PER_PIXEL,325*M_PER_PIXEL);
+        /*EdgeShape coinShape = new EdgeShape();
+        groundShape.set(new Vec2(0, height), new Vec2(width, height));*/
+        coin.createFixture(shape, 0.0f);
+
+        Body coin2 = world.createBody(new BodyDef());
+        CircleShape shape2 = new CircleShape();
+        shape2.setRadius(0.7f);
+        shape2.m_p.set(250*M_PER_PIXEL,325*M_PER_PIXEL);
+        /*EdgeShape coinShape = new EdgeShape();
+        groundShape.set(new Vec2(0, height), new Vec2(width, height));*/
+        coin2.createFixture(shape2, 0.0f);
+        bodies.put(coin, "coin");
+
+        bodies.put(coin2, "coin{2}");
+
+
+
         layer.add(m.get(j).layer());
         world.setContactListener(new ContactListener() {
             @Override
-            public void beginContact(Contact contact) {
+            public void beginContact(final Contact contact) {
 
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
+                System.out.println("a " + bodies.get(a));
+                System.out.println("b " + bodies.get(b));
                 //if(contact.getFixtureA().getBody() == m.get(j).body())
-                if(bodies.get(a) != null) {
+                /*if(bodies.get(a) != null) {
                     debugString = bodies.get(a) + " contacted with " + bodies.get(b);
-                    b.applyForce(new Vec2(1000f, 10f),b.getPosition());
+                    //b.applyForce(new Vec2(1000f, 10f),b.getPosition());
+                }*/
+                if(bodies.get(b) == "coin" || bodies.get(b) == "coin{2}" ) {
+                    //debugString ="Socre = " + (score+10);
+                    debugString = "score = " + score;
+                    score++;
+                    //b.applyForce(new Vec2(1000f, 10f),b.getPosition());
                 }
+               /* keyboard().setListener(new Keyboard.Listener() {
+                    @Override
+                    public void onKeyDown(Keyboard.Event event) {
+                        if(event.key() == Key.SPACE) {
+                            //Body a = contact.getFixtureA().getBody();
+                            Body b = contact.getFixtureB().getBody();
+
+                            b.applyForce(new Vec2(0,-1500f), b.getPosition());
+
+                        }
+                        else if(event.key() == Key.RIGHT) {
+                            //Body a = contact.getFixtureA().getBody();
+                            Body b = contact.getFixtureB().getBody();
+
+                            b.applyForce(new Vec2(200,0f), b.getPosition());
+
+                        }
+                    }
+
+                    @Override
+                    public void onKeyTyped(Keyboard.TypedEvent typedEvent) {
+
+                    }
+
+                    @Override
+                    public void onKeyUp(Keyboard.Event event) {
+
+                    }
+                });*/
 
             }
 

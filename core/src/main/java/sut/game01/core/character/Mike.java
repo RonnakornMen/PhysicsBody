@@ -40,7 +40,7 @@ public class Mike {
     private Body body;
 
     public enum State {
-        IDLE
+        IDLE, WALK, THROW, BACK
     }
 
     ;
@@ -50,9 +50,63 @@ public class Mike {
     private int e = 0;
     private int offset = 0;
 
+    public Body getMyBody() {
 
+        return this.body;
+    }
+    public Mike(){
+
+    }
 
     public Mike(final World world,final float x_px, final float y_px) {
+        PlayN.keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyDown(Keyboard.Event event){
+                if (event.key() == Key.RIGHT) {
+                    action = 1;
+                    switch (state){
+                        case IDLE: if(action ==1){state = State.WALK;} break;
+                        //case WALK: state = State.THROW; break;
+                        case THROW: state = State.WALK; break;
+                    }
+                }
+                else if (event.key() == Key.LEFT) {
+                    action = 1;
+                    switch (state){
+                        case IDLE: if(action ==1){state = State.BACK;} break;
+                        //case WALK: state = State.THROW; break;
+                        case THROW: state = State.WALK; break;
+                    }
+                }
+
+                else if (event.key() == Key.SPACE) {
+                    switch (state){
+                        case IDLE: state = State.THROW; break;
+                        case WALK: state = State.THROW; break;
+                        //case THROW: state = State.IDLE; break;
+                    }
+                }
+
+
+            }
+
+            public void onKeyUp(Keyboard.Event event){
+                if (event.key() == Key.RIGHT) {
+                    action = 0;
+                    if(action ==0&& state == State.WALK){
+                        state = State.IDLE;
+                    }
+
+                }
+                if (event.key() == Key.LEFT) {
+                    action = 0;
+                    if(action ==0&& state == State.BACK){
+                        state = State.IDLE;
+                    }
+
+                }
+            }
+        });
 
 
         sprite = SpriteLoader.getSprite("images/mike2.json");
@@ -83,6 +137,58 @@ public class Mike {
     }
 
     public void update(int delta) {
+        if (hasLoaded == false) return;
+        //System.out.println(action);
+        float move =0;
+        float jump =0;
+        e = e +delta;
+        if (e > 150) {
+            switch(state){
+                case IDLE: offset =0; break;
+                case WALK: offset =4; break;
+                case BACK: offset =9; break;
+
+                case THROW: offset =10;
+                    if (spriteIndex ==12) {
+                        state = State.IDLE;
+                    }break;
+
+            }
+            if(state == State.IDLE){
+                spriteIndex = offset + ((spriteIndex +1 ) %4);
+            }
+            else if(state == State.WALK){
+                spriteIndex = offset + ((spriteIndex +1 ) %6);
+            }
+            else if(state == State.BACK){
+                spriteIndex = offset - (a++ %6);
+            }
+            else if(state == State.THROW){
+                spriteIndex = offset + ((spriteIndex +1 ) %3);
+            }
+            sprite.setSprite(spriteIndex);
+            e = 0;
+        }
+        //sprite.layer().setTranslation(60 , 400);
+        if(state == State.WALK){
+            move = 10f;
+            jump = 0f;
+            body.applyForce(new Vec2(move, jump),body.getPosition());
+        }
+        else if
+                (state == State.BACK){
+            move = -10f;
+            jump = 0f;
+            body.applyForce(new Vec2(move, jump),body.getPosition());
+
+        }
+        else if
+                (state == State.THROW){
+            body.applyForce(new Vec2(0f, -50f),body.getPosition());
+
+
+        }
+      // body.applyForce(new Vec2(move, jump),body.getPosition());
 
     }
 

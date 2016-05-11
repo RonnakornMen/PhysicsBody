@@ -89,6 +89,7 @@ public class Mike {
     public void paint(Clock clock) {
         if(hasLoaded == false)return;
 
+
         sprite.layer().setTranslation(
                 (body.getPosition().x / HomeScreen.M_PER_PIXEL) +10,
                 body.getPosition().y / HomeScreen.M_PER_PIXEL);
@@ -100,6 +101,10 @@ public class Mike {
         bodyDef.position = new Vec2(0, 0);//แปลง pixel ให้เป็น m คือ เอา pixel ไปคูณ กับค่าคงที่
         body = world.createBody(bodyDef);
         //bodyDef.active = new Boolean(true);
+
+        HomeScreen.bodies.put(body, "test_ " + HomeScreen.aa );
+        HomeScreen.aa++;
+
 
         //PolygonShape shape = new PolygonShape();
         /*CircleShape shape = new CircleShape();

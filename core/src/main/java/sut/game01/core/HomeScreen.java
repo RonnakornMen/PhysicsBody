@@ -3,12 +3,16 @@ package sut.game01.core;
 
 import static playn.core.PlayN.*;
 
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
 import playn.core.ImageLayer;
 
@@ -26,6 +30,7 @@ import sut.game01.core.character.Mike;
 import sut.game01.core.sprite.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class HomeScreen extends Screen {
@@ -47,8 +52,13 @@ public class HomeScreen extends Screen {
     private Root root;
     int i=0;
     int j=0;
+    public static int aa = 0;
     //ArrayList<Object> o = new ArrayList<Object>();
+    public static HashMap<Body, String> bodies = new HashMap<Body, String>();
     ArrayList<Mike> m =  new ArrayList<Mike>();
+    private String debugString = String.valueOf(bodies);
+   // private Body body;
+
 
     public HomeScreen(final ScreenStack ss) {
         this.ss = ss;
@@ -116,6 +126,8 @@ public class HomeScreen extends Screen {
 
         });
 
+
+
         if (showDebugDraw) {
             CanvasImage image = graphics().createImage(
                     (int) (width / HomeScreen.M_PER_PIXEL),
@@ -140,8 +152,38 @@ public class HomeScreen extends Screen {
         groundShape.set(new Vec2(0, height), new Vec2(width, height));
         ground.createFixture(groundShape, 0.0f);
         layer.add(m.get(j).layer());
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+
+                Body a = contact.getFixtureA().getBody();
+                Body b = contact.getFixtureB().getBody();
+                //if(contact.getFixtureA().getBody() == m.get(j).body())
+                if(bodies.get(a) != null) {
+                    debugString = bodies.get(a) + " contacted with " + bodies.get(b);
+                    b.applyForce(new Vec2(1000f, 10f),b.getPosition());
+                }
+
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold manifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+
+            }
+        });
 
     }
+
    /* public void aa(float x,float y){
         m.add(i,new Mike(world,x,y));
 
@@ -151,6 +193,7 @@ public class HomeScreen extends Screen {
 
     }*/
 
+
     @Override
     public void update(int delta) {
         super.update(delta);
@@ -158,7 +201,7 @@ public class HomeScreen extends Screen {
         //mike.update(delta);
         for(int k=0;k<=j;k++){
             m.get(k).update(delta);
-            System.out.println(j);
+            //System.out.println(j);
         }
 
     }
@@ -172,6 +215,8 @@ public class HomeScreen extends Screen {
 
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
+            debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
+            debugDraw.getCanvas().drawText(debugString, 100,100);
             world.drawDebugData();
         }
     }
